@@ -9,6 +9,8 @@
 #include "camera.h"
 #include "model.h"
 
+#include "game.h"
+
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -29,6 +31,8 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+Game G(SCR_WIDTH, SCR_HEIGHT);
 
 int main()
 {
@@ -58,7 +62,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -81,7 +85,7 @@ int main()
 
     // load models
     // -----------
-    Model ourModel("models/watercraftPack_007.obj");
+    Model ourModel("models/watercraftPack_023.obj");
 
     
     // draw in wireframe
