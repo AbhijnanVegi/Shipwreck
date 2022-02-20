@@ -6,6 +6,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "camera.h"
+#include "game_object.h"
+
 enum GameState
 {
     GAME_MENU,
@@ -21,6 +24,10 @@ class Game
         bool Keys[1024];
         unsigned int Width, Height;
         unsigned int Score;
+        Camera Cam;
+        std::vector<GameObject> Enemies;
+        std::vector<GameObject> Projectiles;
+        std::vector<GameObject> Collectibles;
 
         Game(unsigned int width, unsigned int height);
         ~Game();

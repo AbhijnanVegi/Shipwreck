@@ -13,15 +13,22 @@ class GameObject
 {
 public:
     // object state
-    glm::vec3   Position, Scale, Rotation;
+    glm::vec3   Position, Scale;
+    float       Rotation;
     Model       ObjectModel;
     bool        Destroyed;
     // constructor(s)
-    GameObject(glm::vec3 Postion, glm::vec3 Scale, glm::vec3 Rotation, string const &path): Position(Position), Scale(Scale), Rotation(Rotation), ObjectModel(path)
+    GameObject(const glm::vec3 &Position,const glm::vec3 &Scale,const float Rotation, string const &path): ObjectModel(path), Destroyed(false)
     {
+        this->Position = Position;
+        this->Scale = Scale;
+        this->Rotation = Rotation;
     }
     // draw sprite
-    void Draw(Renderer &renderer);
+    void Draw(Renderer &renderer, Camera &camera)
+    {
+        renderer.Draw(camera,ObjectModel, this->Position, this->Scale, this->Rotation);
+    }
 };
 
 #endif
