@@ -31,4 +31,19 @@ public:
     }
 };
 
+class Projectile: public GameObject
+{
+public:
+    glm::vec3 Velocity;
+    Projectile(const glm::vec3 &Position, const glm::vec3 &Scale, const float Rotation, string const &path, const glm::vec3 Velocity): GameObject(Position, Scale, Rotation, path)
+    {
+        this->Velocity = Velocity;
+    }
+
+    void Update(float dt)
+    {
+        this->Position += this->Velocity * dt;
+    }
+};
+
 #endif

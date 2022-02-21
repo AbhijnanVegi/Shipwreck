@@ -24,9 +24,10 @@ class Game
         bool Keys[1024];
         unsigned int Width, Height;
         unsigned int Score;
+        unsigned int HP;
         Camera Cam;
         std::vector<GameObject> Enemies;
-        std::vector<GameObject> Projectiles;
+        std::vector<Projectile> Projectiles;
         std::vector<GameObject> Collectibles;
 
         Game(unsigned int width, unsigned int height);
