@@ -24,7 +24,8 @@ class Game
         bool Keys[1024];
         unsigned int Width, Height;
         unsigned int Score;
-        unsigned int HP;
+        int HP;
+        float Time;
         Camera Cam;
         std::vector<GameObject> Enemies;
         std::vector<Projectile> Projectiles;
@@ -38,6 +39,7 @@ class Game
         void Update(float dt);
         void Render();
         void ToggleCamera();
+        void Shoot();
 };
 
 #endif

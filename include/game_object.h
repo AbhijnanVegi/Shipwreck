@@ -16,9 +16,9 @@ public:
     glm::vec3   Position, Scale;
     float       Rotation;
     Model       ObjectModel;
-    bool        Destroyed;
+    float       Cooldown;
     // constructor(s)
-    GameObject(const glm::vec3 &Position,const glm::vec3 &Scale,const float Rotation, string const &path): ObjectModel(path), Destroyed(false)
+    GameObject(const glm::vec3 &Position,const glm::vec3 &Scale,const float Rotation, string const &path): ObjectModel(path), Cooldown(0)
     {
         this->Position = Position;
         this->Scale = Scale;
@@ -42,7 +42,7 @@ public:
 
     void Update(float dt)
     {
-        this->Position += this->Velocity * dt;
+        this->Position += this->Velocity * (dt * 4);
     }
 };
 
