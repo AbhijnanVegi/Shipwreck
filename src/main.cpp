@@ -99,6 +99,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+        Shipwreck.ToggleCamera();
+
     if ( key == GLFW_KEY_ENTER && action == GLFW_PRESS )
     {
         if (Shipwreck.State == GAME_MENU)
