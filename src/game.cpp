@@ -2,6 +2,7 @@
 #include <string>
 #include <random>
 #include <time.h>
+#include <map>
 
 #include "game.h"
 #include "game_object.h"
@@ -188,6 +189,7 @@ void Game::Update(float dt)
     }
 
     updateEnemies(Enemies, dt, Projectiles);
+    Player->Cooldown -= dt;
     Time += dt;
 }
 
@@ -203,7 +205,9 @@ void Game::Shoot()
 {
     if (Player->Cooldown <= 0)
     {
-        Projectiles.push_back(Projectile(Cam.Look * 0.5f, glm::vec3(0.02f, 0.02f, 0.02f), 0.0f, "models/sphere.obj", glm::normalize(Cam.Look)));
+        glm::vec3 Pos = Cam.Look * 0.55f;
+        Projectiles.push_back(Projectile(glm::vec3(Pos.x, 0.2f, Pos.z), glm::vec3(0.02f, 0.02f, 0.02f), 0.0f, "models/sphere.obj", glm::normalize(Cam.Look)));
+        Player->Cooldown = 0.5f;
     }
 }
 
@@ -264,7 +268,8 @@ void updateEnemies(vector<GameObject> &Enemies, float dt, vector<Projectile> &Pr
             if (Enemies[i].Cooldown <= 0.0f)
             {
                 Enemies[i].Cooldown = 4.0f;
-                Projectile *ball = new Projectile(Enemies[i].Position  - glm::normalize(Enemies[i].Position) * 0.5f, glm::vec3(0.02f, 0.02f, 0.02f), 0.0f, "models/sphere.obj", -glm::normalize(Enemies[i].Position));
+                glm::vec3 Pos = Enemies[i].Position - glm::normalize(Enemies[i].Position) * 0.5f;
+                Projectile *ball = new Projectile(glm::vec3(Pos.x,0.2f, Pos.z), glm::vec3(0.02f, 0.02f, 0.02f), 0.0f, "models/sphere.obj", -glm::normalize(Enemies[i].Position));
                 Projectiles.push_back(*ball);
             }
         }
@@ -274,34 +279,37 @@ void updateEnemies(vector<GameObject> &Enemies, float dt, vector<Projectile> &Pr
     }
 }
 
-bool CheckCollision(GameObject &a)
+pair<float,float> GetHitBox()
 {
-    bool onX = a.Position.x < 0.25f && a.Position.x > -0.25f;
-    bool onZ = a.Position.z < 0.9f && a.Position.z > -0.9f;
-    return onX && onZ;
+    glm::vec3 hb = glm::vec3(0.25f, 0.0f, 1.0f);
+    glm::mat4 rot = glm::mat4(1.0f);
+    rot = glm::rotate(rot, glm::radians(Player->Rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+    hb = rot * glm::vec4(hb,1.0f);
+    return pair<float, float>{abs(hb.x), abs(hb.z)};
 }
 
 void handlePlayerChestCollisions(vector<GameObject> &Collectibles, unsigned int &Score)
 {
+    auto hb = GetHitBox();
     for (int i = 0; i < Collectibles.size(); i++)
     {
-        bool onX = Collectibles[i].Position.x < 0.25 && Collectibles[i].Position.x > -0.25f;
-        bool onZ = Collectibles[i].Position.z < 0.9f && Collectibles[i].Position.z > -0.9f;
+        bool onX = Collectibles[i].Position.x < hb.first && Collectibles[i].Position.x > -hb.first;
+        bool onZ = Collectibles[i].Position.z < hb.second && Collectibles[i].Position.z > -hb.second;
         if (onX && onZ)
         {
             Collectibles.erase(Collectibles.begin() + i);
             Score += 10;
-            cout << "Score: " << Score << endl;
         }
     }
 }
 
 void handlePlayerProjectileCollisions(vector<Projectile> &Projectiles, int &HP)
 {
+    auto hb = GetHitBox();
     for (int i = 0; i < Projectiles.size(); i++)
     {
-        bool onX = Projectiles[i].Position.x < 0.25 && Projectiles[i].Position.x > -0.25f;
-        bool onZ = Projectiles[i].Position.z < 0.9f && Projectiles[i].Position.z > -0.9f;
+        bool onX = Projectiles[i].Position.x < hb.first && Projectiles[i].Position.x > -hb.first;
+        bool onZ = Projectiles[i].Position.z < hb.second && Projectiles[i].Position.z > -hb.second;
         if (onX && onZ)
         {
             Projectiles.erase(Projectiles.begin() + i);
@@ -330,9 +338,12 @@ void handleEnemyProjectileCollisions(vector<Projectile> &Projectiles, vector<Gam
 
 void handlePlayerEnemyCollisions(vector<GameObject> &Enemies, int &HP)
 {
+    auto hb = GetHitBox();
     for (int i = 0; i < Enemies.size(); i++)
     {
-        if (glm::length(Enemies[i].Position) < 1.0f)
+        bool onX = Enemies[i].Position.x < hb.first*1.2f && Enemies[i].Position.x > -hb.first*1.2f;
+        bool onZ = Enemies[i].Position.z < hb.second*1.2f && Enemies[i].Position.z > -hb.second*1.2f;
+        if (onX && onZ)
         {
             Enemies.erase(Enemies.begin() + i);
             HP -= 50;
