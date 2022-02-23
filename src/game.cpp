@@ -18,6 +18,7 @@ float angle(glm::vec3 a, glm::vec3 b);
 void handlePlayerChestCollisions(vector<GameObject> &Collectibles, unsigned int &Score);
 void handlePlayerProjectileCollisions(vector<Projectile> &Projectiles, int &HP);
 void handleEnemyProjectileCollisions(vector<Projectile> &Projectiles, vector<GameObject> &Enemies, unsigned int &Score);
+void handlePlayerEnemyCollisions(vector<GameObject> &Enemies, int &HP);
 void generateChests(vector<GameObject> &Collectibles);
 void generateEnemies(vector<GameObject> &Enemies);
 void updateEnemies(vector<GameObject> &Enemies, float dt, vector<Projectile> &Projectiles);
@@ -161,6 +162,7 @@ void Game::Update(float dt)
     handlePlayerChestCollisions(Collectibles, Score);
     handlePlayerProjectileCollisions(Projectiles, HP);
     handleEnemyProjectileCollisions(Projectiles, Enemies, Score);
+    handlePlayerEnemyCollisions(Enemies, HP);
     if (HP <= 0)
     {
         State = GAME_OVER;
@@ -322,6 +324,18 @@ void handleEnemyProjectileCollisions(vector<Projectile> &Projectiles, vector<Gam
                 Enemies.erase(Enemies.begin() + j);
                 Score += 10;
             }
+        }
+    }
+}
+
+void handlePlayerEnemyCollisions(vector<GameObject> &Enemies, int &HP)
+{
+    for (int i = 0; i < Enemies.size(); i++)
+    {
+        if (glm::length(Enemies[i].Position) < 1.0f)
+        {
+            Enemies.erase(Enemies.begin() + i);
+            HP -= 50;
         }
     }
 }
